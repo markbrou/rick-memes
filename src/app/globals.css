@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf5ee;
+  --foreground: #3f3531;
+}
+
+/* Palette taken from Rick's dog: cream fur, merle grey, pink nose and tongue */
+@theme {
+  --color-cream: #faf5ee;
+  --color-cream-dark: #f1e4d3;
+  --color-accent: #096b1f;
+  --color-on-accent: #ffffff;
+  --color-merle: #7a6a62;
+  --color-merle-dark: #3f3531;
+  --color-tongue: #e3798a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button:enabled {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
