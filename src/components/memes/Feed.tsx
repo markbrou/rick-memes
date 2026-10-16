@@ -63,15 +63,15 @@ export default function Feed() {
   }
 
   if (status === "loading") {
-    return <p className="py-16 text-center text-merle">Memes laden...</p>;
+    return <p id="memes" data-feed-status="loading" className="scroll-mt-20 py-16 text-center text-merle">Memes laden...</p>;
   }
 
   if (status === "error") {
-    return <p className="py-16 text-center text-merle">Memes laden is niet gelukt. Vernieuw de pagina.</p>;
+    return <p id="memes" data-feed-status="error" className="scroll-mt-20 py-16 text-center text-merle">Memes laden is niet gelukt. Vernieuw de pagina.</p>;
   }
 
   return (
-    <>
+    <div id="memes" data-feed-status="ready" className="feed-reveal scroll-mt-20">
       <FilterBar value={filter} onChange={setFilter} />
       {visible.length > 0 ? (
         <Grid
@@ -92,6 +92,6 @@ export default function Feed() {
           onClose={() => setOpenIndex(null)}
         />
       )}
-    </>
+    </div>
   );
 }

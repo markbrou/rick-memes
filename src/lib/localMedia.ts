@@ -40,19 +40,22 @@ export function getMediaContentType(filePath: string) {
   return Object.entries(extensions).find(([, value]) => value === extension)?.[0] ?? "application/octet-stream";
 }
 
-export async function removeLocalMedia(publicUrl: string | null) {
-  if (!publicUrl) return;
-
+export function resolveLocalMediaUrl(publicUrl: string | null) {
+  if (!publicUrl) return null;
   let parts: string[];
   try {
     const pathname = new URL(publicUrl, "http://local").pathname;
-    if (!pathname.startsWith("/api/media/")) return;
+    if (!pathname.startsWith("/api/media/")) return null;
     parts = pathname.slice("/api/media/".length).split("/").map(decodeURIComponent);
   } catch {
-    return;
+    return null;
   }
 
-  const filePath = resolveMediaPath(parts);
+  return resolveMediaPath(parts);
+}
+
+export async function removeLocalMedia(publicUrl: string | null) {
+  const filePath = resolveLocalMediaUrl(publicUrl);
   if (!filePath) return;
 
   try {

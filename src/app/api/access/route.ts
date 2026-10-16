@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   }
   const body = await request.json().catch(() => null);
   if (typeof body?.answer !== "string" || body.answer.length > 200 || !verifyAccessAnswer(body.answer)) {
-    return NextResponse.json({ error: "Dat is niet de naam die we zoeken. Probeer het nog eens!" }, { status: 401 });
+    return NextResponse.json({ error: "Fout! Opnieuw!" }, { status: 401 });
   }
   const response = NextResponse.json({ granted: true });
   response.headers.set("Cache-Control", "no-store");

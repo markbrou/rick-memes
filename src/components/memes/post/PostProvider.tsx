@@ -16,7 +16,13 @@ type PostContextValue = {
 
 const PostContext = createContext<PostContextValue | null>(null);
 
-export default function PostProvider({ children }: { children: React.ReactNode }) {
+export default function PostProvider({
+  children,
+  hasSiteAccess,
+}: {
+  children: React.ReactNode;
+  hasSiteAccess: boolean;
+}) {
   const [formOpen, setFormOpen] = useState(false);
   const [revision, setRevision] = useState(0);
   const [toast, setToast] = useState("");
@@ -36,6 +42,8 @@ export default function PostProvider({ children }: { children: React.ReactNode }
   };
 
   useEffect(() => {
+    if (!hasSiteAccess) return;
+
     const controller = new AbortController();
     fetch("/api/admin/session", { cache: "no-store", signal: controller.signal })
       .then((response) => response.json())
@@ -44,7 +52,7 @@ export default function PostProvider({ children }: { children: React.ReactNode }
         if (!controller.signal.aborted) setAdminMode(false);
       });
     return () => controller.abort();
-  }, []);
+  }, [hasSiteAccess]);
 
   return (
     <PostContext value={{

@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import type { MemeItem } from "@/data/memes";
 import Media from "./Media";
 import PostDetails from "./PostDetails";
@@ -17,11 +18,49 @@ const navButton =
 
 export default function Viewer({ items, index, onIndexChange, onClose }: Props) {
   const current = items[index];
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const step = useCallback(
     (delta: number) => onIndexChange((index + delta + items.length) % items.length),
     [index, items.length, onIndexChange],
   );
+
+  function handleTouchStart(event: React.TouchEvent<HTMLElement>) {
+    if (event.touches.length !== 1 || items.length < 2) {
+      touchStart.current = null;
+      return;
+    }
+
+    const target = event.target;
+    if (!(target instanceof Element) || target.closest("figcaption, button, input, textarea, select")) {
+      touchStart.current = null;
+      return;
+    }
+
+    const touch = event.touches[0];
+    if (
+      target instanceof HTMLVideoElement &&
+      touch.clientY >= target.getBoundingClientRect().bottom - 56
+    ) {
+      touchStart.current = null;
+      return;
+    }
+
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function handleTouchEnd(event: React.TouchEvent<HTMLElement>) {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start || event.changedTouches.length !== 1) return;
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (Math.abs(deltaX) < 60 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
+
+    step(deltaX < 0 ? 1 : -1);
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -37,7 +76,9 @@ export default function Viewer({ items, index, onIndexChange, onClose }: Props) 
     };
   }, [onClose, step]);
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -73,11 +114,15 @@ export default function Viewer({ items, index, onIndexChange, onClose }: Props) 
 
       <figure
         onClick={(e) => e.stopPropagation()}
-        className="relative flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl bg-black shadow-2xl md:m-auto md:max-h-[90vh] md:max-w-5xl md:flex-none md:flex-row md:bg-white"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={() => { touchStart.current = null; }}
+        className="relative flex min-h-0 w-full flex-1 touch-pan-y flex-col overflow-hidden rounded-2xl bg-black shadow-2xl md:m-auto md:max-h-[90vh] md:max-w-5xl md:flex-none md:flex-row md:bg-white"
       >
         <Media item={current} />
         <PostDetails key={current.id} item={current} position={`${index + 1} / ${items.length}`} />
       </figure>
-    </div>
+    </div>,
+    document.body,
   );
 }

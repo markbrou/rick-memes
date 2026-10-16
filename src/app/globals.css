@@ -36,3 +36,18 @@ button:enabled {
 button:disabled {
   cursor: not-allowed;
 }
+
+@keyframes feed-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .feed-reveal {
+    animation: feed-appear 600ms ease-out both;
+  }
+}
