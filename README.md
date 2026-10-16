@@ -19,7 +19,7 @@ The public repository is `markbrouwer/rick-memes`. Use a new version tag for eac
 
 ```powershell
 $Image = "markbrouwer/rick-memes"
-$Version = "1.0.0"
+$Version = "1.1.0"
 
 docker login --username markbrouwer
 
@@ -63,7 +63,7 @@ Use a unique Job name for each release. Update the version tag before applying:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: rick-memes-migrate-v1-0-0
+  name: rick-memes-migrate-v1-1-0
 spec:
   backoffLimit: 2
   template:
@@ -71,7 +71,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: migrate
-          image: markbrouwer/rick-memes:1.0.0-migrate
+          image: markbrouwer/rick-memes:1.1.0-migrate
           imagePullPolicy: IfNotPresent
           command: ["npm", "run", "db:migrate"]
           env:
@@ -86,10 +86,10 @@ Apply the Job and wait for success before deploying the new app version:
 
 ```powershell
 kubectl apply -f rick-memes-migrate.yaml
-kubectl wait --for=condition=complete job/rick-memes-migrate-v1-0-0 --timeout=120s
+kubectl wait --for=condition=complete job/rick-memes-migrate-v1-1-0 --timeout=120s
 ```
 
-Check failures with `kubectl logs job/rick-memes-migrate-v1-0-0`. If retrying a failed/completed release Job, delete that Job and recreate it, or use a new versioned Job name. Never delete the PostgreSQL data volume to rerun migrations.
+Check failures with `kubectl logs job/rick-memes-migrate-v1-1-0`. If retrying a failed/completed release Job, delete that Job and recreate it, or use a new versioned Job name. Never delete the PostgreSQL data volume to rerun migrations.
 
 ### 2. Deploy the app
 
@@ -116,7 +116,7 @@ spec:
         fsGroup: 1001
       containers:
         - name: app
-          image: markbrouwer/rick-memes:1.0.0
+          image: markbrouwer/rick-memes:1.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
