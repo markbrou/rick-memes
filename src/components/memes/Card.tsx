@@ -3,6 +3,7 @@ import type { MemeItem } from "@/data/memes";
 import { formatDate } from "@/lib/formatDate";
 import mediaLoader from "@/lib/mediaLoader";
 import Avatar from "./Avatar";
+import CommentIcon from "./CommentIcon";
 
 type Props = {
   item: MemeItem;
@@ -46,8 +47,9 @@ export default function Card({ item, onOpen, adminMode, deleting, onDelete }: Pr
             <span className="font-semibold text-merle-dark">{item.author}</span>
             <span aria-hidden>·</span>
             <time dateTime={item.postedAt}>{formatDate(item.postedAt)}</time>
-            <span className="ml-auto" aria-label={`${item.comments?.length ?? 0} reacties`}>
-              💬 {item.comments?.length ?? 0}
+            <span className="ml-auto inline-flex items-center gap-1 text-sm" aria-label={`${item.comments?.length ?? 0} reacties`}>
+              <CommentIcon />
+              {item.comments?.length ?? 0}
             </span>
           </div>
         </div>

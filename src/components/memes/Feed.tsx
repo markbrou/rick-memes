@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MemeItem } from "@/data/memes";
 import FilterBar, { type Filter } from "./FilterBar";
 import Grid from "./Grid";
@@ -14,6 +14,7 @@ export default function Feed() {
   const [filter, setFilter] = useState<Filter>("all");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const displayOrder = useRef<string[] | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -26,7 +27,12 @@ export default function Feed() {
         const data: unknown = await response.json();
         if (!Array.isArray(data)) throw new Error("Ongeldig antwoord ontvangen");
 
-        setItems(data as MemeItem[]);
+        const incoming = data as MemeItem[];
+        const ordered = displayOrder.current === null
+          ? shuffleMemes(incoming)
+          : preserveDisplayOrder(incoming, displayOrder.current);
+        displayOrder.current = ordered.map((item) => item.id);
+        setItems(ordered);
         setStatus("ready");
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
@@ -94,4 +100,24 @@ export default function Feed() {
       )}
     </div>
   );
+}
+
+function shuffleMemes(items: MemeItem[]) {
+  const shuffled = [...items];
+  for (let position = shuffled.length - 1; position > 0; position--) {
+    const swapWith = Math.floor(Math.random() * (position + 1));
+    [shuffled[position], shuffled[swapWith]] = [shuffled[swapWith], shuffled[position]];
+  }
+  return shuffled;
+}
+
+function preserveDisplayOrder(items: MemeItem[], order: string[]) {
+  const itemsById = new Map(items.map((item) => [item.id, item]));
+  const knownIds = new Set(order);
+  const existing = order.flatMap((id) => {
+    const item = itemsById.get(id);
+    return item ? [item] : [];
+  });
+  const newlyAdded = items.filter((item) => !knownIds.has(item.id));
+  return [...existing, ...newlyAdded];
 }

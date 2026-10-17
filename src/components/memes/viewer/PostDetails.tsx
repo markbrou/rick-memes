@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/formatDate";
 import Avatar from "../Avatar";
 import CommentForm from "./CommentForm";
 import Comments from "./Comments";
+import CommentIcon from "../CommentIcon";
 
 type Props = {
   item: MemeItem;
@@ -31,7 +32,8 @@ export default function PostDetails({ item, position }: Props) {
           aria-label={bioOpen ? "Bijschrift en reacties verbergen" : "Bijschrift en reacties tonen"}
           className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-cream-dark px-3 text-xs font-semibold text-merle-dark md:hidden"
         >
-          💬 {item.comments?.length ?? 0}
+          <CommentIcon className="h-5 w-5" />
+          {item.comments?.length ?? 0}
           <svg viewBox="0 0 20 20" fill="currentColor" className={`h-4 w-4 transition-transform ${bioOpen ? "rotate-180" : ""}`}>
             <path d="M5.23 12.79a.75.75 0 0 0 1.06.02L10 9.23l3.71 3.58a.75.75 0 1 0 1.04-1.08l-4.23-4.08a.75.75 0 0 0-1.04 0L5.25 11.73a.75.75 0 0 0-.02 1.06Z" />
           </svg>
