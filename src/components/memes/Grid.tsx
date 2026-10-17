@@ -7,9 +7,10 @@ type Props = {
   adminMode: boolean;
   deletingId: string | null;
   onDelete: (item: MemeItem) => void;
+  currentAuthor: string;
 };
 
-export default function Grid({ items, onOpen, adminMode, deletingId, onDelete }: Props) {
+export default function Grid({ items, onOpen, adminMode, deletingId, onDelete, currentAuthor }: Props) {
   return (
     <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item, index) => (
@@ -20,6 +21,7 @@ export default function Grid({ items, onOpen, adminMode, deletingId, onDelete }:
             adminMode={adminMode}
             deleting={deletingId === item.id}
             onDelete={() => onDelete(item)}
+            currentAuthor={currentAuthor}
           />
         </li>
       ))}

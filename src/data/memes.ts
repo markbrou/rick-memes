@@ -18,6 +18,8 @@ export type MemeItem = {
   bio?: string;
   postedAt: string;
   comments?: Comment[];
+  likeCount?: number;
+  liked?: boolean;
 };
 
 export const memes: MemeItem[] = [];

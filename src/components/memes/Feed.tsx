@@ -6,6 +6,7 @@ import FilterBar, { type Filter } from "./FilterBar";
 import Grid from "./Grid";
 import { usePostContext } from "./post/PostProvider";
 import Viewer from "./viewer/Viewer";
+import { getRememberedAuthor } from "@/lib/rememberedAuthor";
 
 export default function Feed() {
   const { revision, adminMode, showToast, disableAdminMode } = usePostContext();
@@ -14,13 +15,17 @@ export default function Feed() {
   const [filter, setFilter] = useState<Filter>("all");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [currentAuthor, setCurrentAuthor] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
 
     async function loadMemes() {
       try {
-        const response = await fetch("/api/memes", { signal: controller.signal });
+        const author = getRememberedAuthor().trim();
+        setCurrentAuthor(author);
+        const query = author ? `?author=${encodeURIComponent(author)}` : "";
+        const response = await fetch(`/api/memes${query}`, { signal: controller.signal });
         if (!response.ok) throw new Error(`Verzoek mislukt (${response.status})`);
 
         const data: unknown = await response.json();
@@ -80,6 +85,7 @@ export default function Feed() {
           adminMode={adminMode}
           deletingId={deletingId}
           onDelete={deleteMeme}
+          currentAuthor={currentAuthor}
         />
       ) : (
         <p className="py-16 text-center text-merle">Er staan nog geen berichten. Plaats als eerste een meme!</p>
@@ -90,6 +96,7 @@ export default function Feed() {
           index={openIndex}
           onIndexChange={setOpenIndex}
           onClose={() => setOpenIndex(null)}
+          currentAuthor={currentAuthor}
         />
       )}
     </div>

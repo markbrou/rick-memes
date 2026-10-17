@@ -11,12 +11,13 @@ type Props = {
   index: number;
   onIndexChange: (index: number) => void;
   onClose: () => void;
+  currentAuthor: string;
 };
 
 const navButton =
   "fixed top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-2xl text-white hover:bg-white/25 md:top-1/2 md:h-12 md:w-12 md:-translate-y-1/2";
 
-export default function Viewer({ items, index, onIndexChange, onClose }: Props) {
+export default function Viewer({ items, index, onIndexChange, onClose, currentAuthor }: Props) {
   const current = items[index];
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
@@ -120,7 +121,12 @@ export default function Viewer({ items, index, onIndexChange, onClose }: Props) 
         className="relative flex min-h-0 w-full flex-1 touch-pan-y flex-col overflow-hidden rounded-2xl bg-black shadow-2xl md:m-auto md:max-h-[90vh] md:max-w-5xl md:flex-none md:flex-row md:bg-white"
       >
         <Media item={current} />
-        <PostDetails key={current.id} item={current} position={`${index + 1} / ${items.length}`} />
+        <PostDetails
+          key={current.id}
+          item={current}
+          position={`${index + 1} / ${items.length}`}
+          currentAuthor={currentAuthor}
+        />
       </figure>
     </div>,
     document.body,

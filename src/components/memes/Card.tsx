@@ -3,6 +3,7 @@ import type { MemeItem } from "@/data/memes";
 import { formatDate } from "@/lib/formatDate";
 import mediaLoader from "@/lib/mediaLoader";
 import Avatar from "./Avatar";
+import LikeButton from "./LikeButton";
 
 type Props = {
   item: MemeItem;
@@ -10,9 +11,10 @@ type Props = {
   adminMode: boolean;
   deleting: boolean;
   onDelete: () => void;
+  currentAuthor: string;
 };
 
-export default function Card({ item, onOpen, adminMode, deleting, onDelete }: Props) {
+export default function Card({ item, onOpen, adminMode, deleting, onDelete, currentAuthor }: Props) {
   return (
     <article className="group relative overflow-hidden rounded-2xl bg-white text-left shadow-sm ring-1 ring-merle/15 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/20 hover:ring-accent/60">
       <button
@@ -46,12 +48,21 @@ export default function Card({ item, onOpen, adminMode, deleting, onDelete }: Pr
             <span className="font-semibold text-merle-dark">{item.author}</span>
             <span aria-hidden>·</span>
             <time dateTime={item.postedAt}>{formatDate(item.postedAt)}</time>
-            <span className="ml-auto" aria-label={`${item.comments?.length ?? 0} reacties`}>
-              💬 {item.comments?.length ?? 0}
-            </span>
           </div>
         </div>
       </button>
+      <div className="flex items-center justify-between border-t border-cream-dark/70 px-3 py-1.5">
+        <span className="text-xs text-merle" aria-label={`${item.comments?.length ?? 0} reacties`}>
+          💬 {item.comments?.length ?? 0}
+        </span>
+        <LikeButton
+          key={`${item.id}:${item.likeCount ?? 0}:${item.liked ? 1 : 0}`}
+          memeId={item.id}
+          author={currentAuthor}
+          likeCount={item.likeCount ?? 0}
+          liked={item.liked ?? false}
+        />
+      </div>
       {adminMode && (
         <button
           type="button"

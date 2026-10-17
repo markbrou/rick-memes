@@ -1,12 +1,14 @@
-import { asc, desc } from "drizzle-orm";
+import { asc, count, desc, eq } from "drizzle-orm";
 import { getDatabase } from "@/db";
-import { comments, memes } from "@/db/schema";
+import { comments, memeLikes, memes } from "@/db/schema";
 import { createMemeSchema } from "@/lib/memeValidation";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const data = await getDatabase().query.memes.findMany({
+export async function GET(request: Request) {
+  const author = new URL(request.url).searchParams.get("author")?.trim().toLowerCase() ?? "";
+  const db = getDatabase();
+  const data = await db.query.memes.findMany({
     orderBy: desc(memes.postedAt),
     with: {
       comments: {
@@ -16,7 +18,21 @@ export async function GET() {
     },
   });
 
-  return Response.json(data);
+  const likeCounts = await db
+    .select({ memeId: memeLikes.memeId, count: count() })
+    .from(memeLikes)
+    .groupBy(memeLikes.memeId);
+  const likedRows = author
+    ? await db.select({ memeId: memeLikes.memeId }).from(memeLikes).where(eq(memeLikes.author, author))
+    : [];
+  const countByMeme = new Map(likeCounts.map((row) => [row.memeId, Number(row.count)]));
+  const likedMemeIds = new Set(likedRows.map((row) => row.memeId));
+
+  return Response.json(data.map((meme) => ({
+    ...meme,
+    likeCount: countByMeme.get(meme.id) ?? 0,
+    liked: likedMemeIds.has(meme.id),
+  })));
 }
 
 export async function POST(request: Request) {

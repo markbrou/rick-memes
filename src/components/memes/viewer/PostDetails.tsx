@@ -6,13 +6,15 @@ import { formatDate } from "@/lib/formatDate";
 import Avatar from "../Avatar";
 import CommentForm from "./CommentForm";
 import Comments from "./Comments";
+import LikeButton from "../LikeButton";
 
 type Props = {
   item: MemeItem;
   position: string;
+  currentAuthor: string;
 };
 
-export default function PostDetails({ item, position }: Props) {
+export default function PostDetails({ item, position, currentAuthor }: Props) {
   const [bioOpen, setBioOpen] = useState(false);
 
   return (
@@ -44,6 +46,15 @@ export default function PostDetails({ item, position }: Props) {
           bioOpen ? "visible translate-y-0 opacity-100" : "pointer-events-none invisible translate-y-full opacity-0"
         }`}
       >
+        <div className="mb-3 flex justify-end">
+          <LikeButton
+            key={`${item.id}:${item.likeCount ?? 0}:${item.liked ? 1 : 0}`}
+            memeId={item.id}
+            author={currentAuthor}
+            likeCount={item.likeCount ?? 0}
+            liked={item.liked ?? false}
+          />
+        </div>
         {item.bio && <p className="whitespace-pre-line text-sm leading-relaxed text-merle-dark [overflow-wrap:anywhere]">{item.bio}</p>}
         <time dateTime={item.postedAt} className="mt-4 block text-xs uppercase tracking-wide text-merle">
           {formatDate(item.postedAt, "long")}
