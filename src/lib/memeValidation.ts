@@ -22,9 +22,9 @@ export const createCommentSchema = z.object({
 
 export const createMemeSchema = z
   .object({
-    title: z.string().trim().min(1).max(100),
+    title: z.string().trim().min(1).max(60),
     author: z.string().trim().min(1).max(50),
-    bio: z.string().trim().max(1000).optional(),
+    bio: z.string().trim().max(500).optional(),
     type: z.enum(["meme", "video"]),
     thumbnail: z.string().refine((value) => value.startsWith("/api/media/") || URL.canParse(value), "Invalid media URL"),
     videoSrc: z.string().refine((value) => value.startsWith("/api/media/") || URL.canParse(value), "Invalid media URL").optional(),

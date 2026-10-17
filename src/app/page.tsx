@@ -14,7 +14,7 @@ export default async function Home() {
     <PostProvider hasSiteAccess={hasAccess}>
       <div className="flex flex-1 flex-col bg-cream font-sans text-merle-dark">
         <SiteHeader showPostAction={hasAccess} />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-6">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-12">
           <Hero hasAccess={hasAccess} question={getAccessQuestion()} />
           {hasAccess && <Feed />}
         </main>

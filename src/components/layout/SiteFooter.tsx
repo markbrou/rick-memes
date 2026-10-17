@@ -10,7 +10,7 @@ export default function SiteFooter({ showAdminAction }: { showAdminAction: boole
       <div className="col-span-2 row-start-1 text-center sm:col-span-1 sm:col-start-2">
         <p className="font-semibold">Stichting Blijf Rick Pesten &copy; 2026</p>
         <p className="mt-1 text-xs text-merle/80">
-          Website: Mark · Hosting: LuukHorsmanHomeLab
+          Website: <span className="font-semibold text-merle-dark">Mark</span> · Hosting: <span className="font-semibold text-merle-dark">LuukHorsmanHomeLab</span>
         </p>
       </div>
       {adminMode && (

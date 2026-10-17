@@ -16,6 +16,7 @@ export default function Hero({ hasAccess, question }: Props) {
   const scrollFrame = useRef(0);
   const [accessDialogOpen, setAccessDialogOpen] = useState(false);
   const [skadiVisible, setSkadiVisible] = useState(false);
+  const [rickBouncing, setRickBouncing] = useState(false);
 
   const scrollToMemes = useCallback(() => {
     window.history.replaceState(null, "", "#memes");
@@ -64,6 +65,17 @@ export default function Hero({ hasAccess, question }: Props) {
 
   useEffect(() => () => window.cancelAnimationFrame(scrollFrame.current), []);
 
+  function handleRickClick() {
+    if (!hasAccess) {
+      setAccessDialogOpen(true);
+      return;
+    }
+
+    const revealSkadi = !skadiVisible;
+    setSkadiVisible(revealSkadi);
+    setRickBouncing(revealSkadi);
+  }
+
   return (
     <>
       <section className="flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center py-8 text-center">
@@ -84,10 +96,11 @@ export default function Hero({ hasAccess, question }: Props) {
             )}
             <button
               type="button"
-              onClick={() => hasAccess ? setSkadiVisible((visible) => !visible) : setAccessDialogOpen(true)}
+              onClick={handleRickClick}
+              onAnimationEnd={() => setRickBouncing(false)}
               aria-label={hasAccess ? (skadiVisible ? "Verberg Skadi" : "Toon Skadi") : "Ontgrendel om Skadi te zien"}
               aria-pressed={hasAccess ? skadiVisible : undefined}
-              className="block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4"
+              className={`rick-head-button block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4 ${rickBouncing ? "is-bouncing" : ""}`}
             >
               <Image
                 id="hero-logo"

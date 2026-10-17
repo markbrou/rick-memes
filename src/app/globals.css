@@ -50,4 +50,27 @@ button:disabled {
   .feed-reveal {
     animation: feed-appear 600ms ease-out both;
   }
+
+  @keyframes rick-head-bounce {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0);
+    }
+    35% {
+      transform: translateY(-10px) rotate(-2deg);
+    }
+    65% {
+      transform: translateY(2px) rotate(1deg);
+    }
+  }
+
+  .rick-head-button.is-bouncing > img {
+    animation: rick-head-bounce 480ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .rick-head-button:hover > img {
+    animation: rick-head-bounce 480ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
 }

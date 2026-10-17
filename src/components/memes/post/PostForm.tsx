@@ -9,9 +9,9 @@ import { getRememberedAuthor, rememberAuthor } from "@/lib/rememberedAuthor";
 import { inspectMedia, uploadMedia } from "./media";
 
 const formSchema = z.object({
-  title: z.string().trim().min(1, "Vul een titel in").max(100),
+  title: z.string().trim().min(1, "Vul een titel in").max(60, "Een titel mag maximaal 60 tekens bevatten"),
   author: z.string().trim().min(1, "Vul je naam in").max(50),
-  bio: z.string().trim().max(1000),
+  bio: z.string().trim().max(500, "Een bijschrift mag maximaal 500 tekens bevatten"),
 });
 
 type FormFields = z.infer<typeof formSchema>;
@@ -144,13 +144,13 @@ export default function PostForm({ onClose, onCreated }: Props) {
           </div>
 
           <Field label="Titel" error={errors.title?.message}>
-            <input {...register("title")} className={fieldClass} placeholder="Wat heeft Rick nou weer gedaan?" />
+            <input {...register("title")} maxLength={60} className={fieldClass} placeholder="Wat heeft Rick nou weer gedaan?" />
           </Field>
           <Field label="Je naam" error={errors.author?.message}>
             <input {...register("author")} className={fieldClass} placeholder="Rick" />
           </Field>
           <Field label="Bijschrift (optioneel)" error={errors.bio?.message}>
-            <textarea {...register("bio")} className={`${fieldClass} min-h-28 resize-y`} placeholder="Vertel het verhaal achter deze meme..." />
+            <textarea {...register("bio")} maxLength={500} className={`${fieldClass} min-h-28 resize-y`} placeholder="Vertel het verhaal achter deze meme..." />
           </Field>
 
           {fileError && <p className="text-sm font-semibold text-red-700">{fileError}</p>}

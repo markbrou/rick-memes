@@ -17,11 +17,11 @@ export default function PostDetails({ item, position }: Props) {
 
   return (
     <figcaption className="relative shrink-0 bg-white text-merle-dark md:flex md:w-80 md:flex-col">
-      <div className="relative z-10 flex items-center gap-3 border-b border-cream-dark bg-white px-4 py-3">
+      <div className="relative z-10 flex min-h-24 items-center gap-3 border-b border-cream-dark bg-white px-4 py-4 md:min-h-0 md:py-3">
         <Avatar name={item.author} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold">{item.author}</p>
-          <h2 className="truncate text-base font-bold">{item.title}</h2>
+          <h2 className="whitespace-normal break-words text-base font-bold leading-snug [overflow-wrap:anywhere]">{item.title}</h2>
         </div>
         <span className="shrink-0 text-xs text-merle">{position}</span>
         <button
@@ -44,7 +44,7 @@ export default function PostDetails({ item, position }: Props) {
           bioOpen ? "visible translate-y-0 opacity-100" : "pointer-events-none invisible translate-y-full opacity-0"
         }`}
       >
-        {item.bio && <p className="whitespace-pre-line text-sm leading-relaxed text-merle-dark">{item.bio}</p>}
+        {item.bio && <p className="whitespace-pre-line text-sm leading-relaxed text-merle-dark [overflow-wrap:anywhere]">{item.bio}</p>}
         <time dateTime={item.postedAt} className="mt-4 block text-xs uppercase tracking-wide text-merle">
           {formatDate(item.postedAt, "long")}
         </time>
