@@ -19,7 +19,7 @@ The public repository is `markbrouwer/rick-memes`. Use a new version tag for eac
 
 ```powershell
 $Image = "markbrouwer/rick-memes"
-$Version = "1.1.0"
+$Version = "1.2.0"
 
 docker login --username markbrouwer
 
@@ -44,6 +44,7 @@ Provide these values to the app at runtime. Put secrets in the platform's Secret
 | `ACCESS_ANSWER` | Yes | Answer to the private-site question. Comparison ignores case and surrounding whitespace. |
 | `ACCESS_SESSION_SECRET` | Yes | Long, random signing key for access cookies. Use at least 32 random bytes and keep the same value across app replicas. |
 | `UPLOAD_DIR` | Yes | Set to `/app/uploads`; mount persistent storage at this exact path. |
+| `BASE_URL` | No | Public website URL used for shared meme links. Defaults to `https://rick-memes.nl`; set to your local URL when testing. Shared links still require a valid site-access session before opening the meme. |
 | `ACCESS_QUESTION` | No | Question shown on the access page. Defaults to `Wat is de naam van Rick zijn hond?`. |
 | `ADMIN_PASSPHRASE` | No | Separate passphrase for admin mode and deleting posts. |
 
@@ -63,7 +64,7 @@ Use a unique Job name for each release. Update the version tag before applying:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: rick-memes-migrate-v1-1-0
+  name: rick-memes-migrate-v1-2-0
 spec:
   backoffLimit: 2
   template:
@@ -71,7 +72,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: migrate
-          image: markbrouwer/rick-memes:1.1.0-migrate
+          image: markbrouwer/rick-memes:1.2.0-migrate
           imagePullPolicy: IfNotPresent
           command: ["npm", "run", "db:migrate"]
           env:
@@ -86,10 +87,10 @@ Apply the Job and wait for success before deploying the new app version:
 
 ```powershell
 kubectl apply -f rick-memes-migrate.yaml
-kubectl wait --for=condition=complete job/rick-memes-migrate-v1-1-0 --timeout=120s
+kubectl wait --for=condition=complete job/rick-memes-migrate-v1-2-0 --timeout=120s
 ```
 
-Check failures with `kubectl logs job/rick-memes-migrate-v1-1-0`. If retrying a failed/completed release Job, delete that Job and recreate it, or use a new versioned Job name. Never delete the PostgreSQL data volume to rerun migrations.
+Check failures with `kubectl logs job/rick-memes-migrate-v1-2-0`. If retrying a failed/completed release Job, delete that Job and recreate it, or use a new versioned Job name. Never delete the PostgreSQL data volume to rerun migrations.
 
 ### 2. Deploy the app
 
@@ -116,7 +117,7 @@ spec:
         fsGroup: 1001
       containers:
         - name: app
-          image: markbrouwer/rick-memes:1.1.0
+          image: markbrouwer/rick-memes:1.2.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

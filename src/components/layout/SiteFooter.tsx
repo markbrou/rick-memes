@@ -3,7 +3,7 @@
 import { usePostContext } from "@/components/memes/post/PostProvider";
 
 export default function SiteFooter({ showAdminAction }: { showAdminAction: boolean }) {
-  const { adminMode, openAdminDialog, disableAdminMode } = usePostContext();
+  const { adminMode, openAdminDialog, disableAdminMode, rickMode, openRickDialog, disableRickMode } = usePostContext();
 
   return (
     <footer className="grid grid-cols-2 items-center gap-y-3 border-t border-accent/20 bg-cream-dark px-4 py-5 text-sm text-merle sm:grid-cols-[1fr_auto_1fr] sm:py-6">
@@ -13,7 +13,16 @@ export default function SiteFooter({ showAdminAction }: { showAdminAction: boole
           Website: <span className="font-semibold text-merle-dark">Mark</span> · Hosting: <span className="font-semibold text-merle-dark">LuukHorsmanHomeLab</span>
         </p>
       </div>
-      {adminMode && (
+      {showAdminAction && (
+        <div className="col-start-1 row-start-2 flex flex-wrap items-center gap-4 justify-self-start sm:row-start-1">
+          <button
+            type="button"
+            onClick={rickMode ? disableRickMode : openRickDialog}
+            className="text-xs font-semibold underline decoration-merle/40 underline-offset-4 hover:text-merle-dark"
+          >
+            {rickMode ? "Rick modus afsluiten" : "Rick modus"}
+          </button>
+          {adminMode && (
         <a
           href="/api/admin/export"
           download="rick-memes-export.zip"
@@ -24,6 +33,8 @@ export default function SiteFooter({ showAdminAction }: { showAdminAction: boole
           <DownloadIcon />
           Exporteren
         </a>
+          )}
+        </div>
       )}
       {showAdminAction && (
         <button

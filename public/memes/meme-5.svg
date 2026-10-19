@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1400">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#1e293b"/></linearGradient></defs>
-  <rect width="800" height="1400" fill="url(#g)"/>
-  <text x="400" y="140" font-family="Impact, Arial Black, sans-serif" font-size="72" fill="#fff" stroke="#000" stroke-width="3" text-anchor="middle">RICK REACHED</text>
-  <text x="400" y="780" font-size="300" text-anchor="middle">🏔️</text>
-  <text x="400" y="1300" font-family="Impact, Arial Black, sans-serif" font-size="72" fill="#fff" stroke="#000" stroke-width="3" text-anchor="middle">THE SUMMIT</text>
-</svg>

@@ -4,22 +4,27 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import AccessGate from "@/components/AccessGate";
+import { usePostContext } from "@/components/memes/post/PostProvider";
 
 type Props = {
   hasAccess: boolean;
   question: string;
+  sharedMemeId?: string;
 };
 
-export default function Hero({ hasAccess, question }: Props) {
+export default function Hero({ hasAccess, question, sharedMemeId }: Props) {
   const router = useRouter();
-  const hadAccess = useRef(hasAccess);
+  const { memeCount } = usePostContext();
   const scrollFrame = useRef(0);
-  const [accessDialogOpen, setAccessDialogOpen] = useState(false);
-  const [skadiVisible, setSkadiVisible] = useState(false);
+  const [accessDialogOpen, setAccessDialogOpen] = useState(Boolean(sharedMemeId && !hasAccess));
+  const [skadiDismissed, setSkadiDismissed] = useState(false);
+  const skadiVisible = hasAccess && !skadiDismissed;
   const [rickBouncing, setRickBouncing] = useState(false);
 
   const scrollToMemes = useCallback(() => {
-    window.history.replaceState(null, "", "#memes");
+    const destination = new URL(window.location.href);
+    destination.hash = "memes";
+    window.history.replaceState(null, "", destination);
     window.cancelAnimationFrame(scrollFrame.current);
 
     const duration = 600;
@@ -57,12 +62,6 @@ export default function Hero({ hasAccess, question }: Props) {
     scrollFrame.current = window.requestAnimationFrame(waitForFeed);
   }, []);
 
-  useEffect(() => {
-    if (!hasAccess || hadAccess.current) return;
-    hadAccess.current = true;
-    scrollToMemes();
-  }, [hasAccess, router, scrollToMemes]);
-
   useEffect(() => () => window.cancelAnimationFrame(scrollFrame.current), []);
 
   function handleRickClick() {
@@ -72,7 +71,7 @@ export default function Hero({ hasAccess, question }: Props) {
     }
 
     const revealSkadi = !skadiVisible;
-    setSkadiVisible(revealSkadi);
+    setSkadiDismissed(skadiVisible);
     setRickBouncing(revealSkadi);
   }
 
@@ -94,11 +93,36 @@ export default function Hero({ hasAccess, question }: Props) {
                 }`}
               />
             )}
+            {hasAccess && (
+              <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute bottom-0 left-full ml-2 h-24 w-[62px] transition duration-300 sm:h-28 sm:w-[73px] md:h-32 md:w-[83px] ${
+                  skadiVisible ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0"
+                }`}
+              >
+                <Image
+                  src="/daisy.png"
+                  alt=""
+                  width={810}
+                  height={1150}
+                  unoptimized
+                  className="absolute bottom-0 left-0 h-full w-auto max-w-none"
+                />
+                <Image
+                  src="/madness.png"
+                  alt=""
+                  width={789}
+                  height={1213}
+                  unoptimized
+                  className="absolute bottom-0 left-[90%] z-10 h-full w-auto max-w-none"
+                />
+              </div>
+            )}
             <button
               type="button"
               onClick={handleRickClick}
               onAnimationEnd={() => setRickBouncing(false)}
-              aria-label={hasAccess ? (skadiVisible ? "Verberg Skadi" : "Toon Skadi") : "Ontgrendel om Skadi te zien"}
+              aria-label={hasAccess ? (skadiVisible ? "Verberg Skadi, Madness en Daisy" : "Toon Skadi, Madness en Daisy") : "Ontgrendel om Skadi, Madness en Daisy te zien"}
               aria-pressed={hasAccess ? skadiVisible : undefined}
               className={`rick-head-button block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4 ${rickBouncing ? "is-bouncing" : ""}`}
             >
@@ -129,7 +153,7 @@ export default function Hero({ hasAccess, question }: Props) {
               }}
               className="mt-6 inline-flex items-center gap-2 rounded-full border border-accent/25 px-5 py-3 font-bold text-accent transition hover:bg-accent hover:text-on-accent"
             >
-              Naar de memes!
+              Naar de memes{memeCount !== null ? ` (${memeCount})` : ""}
               <ArrowDown />
             </a>
           ) : (

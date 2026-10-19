@@ -5,6 +5,9 @@ import AdminDialog from "./AdminDialog";
 import PostForm from "./PostForm";
 
 type PostContextValue = {
+  baseUrl: string;
+  memeCount: number | null;
+  setMemeCount: (count: number) => void;
   openPostForm: () => void;
   revision: number;
   refreshFeed: () => void;
@@ -12,6 +15,9 @@ type PostContextValue = {
   adminMode: boolean;
   openAdminDialog: () => void;
   disableAdminMode: () => Promise<void>;
+  rickMode: boolean;
+  openRickDialog: () => void;
+  disableRickMode: () => void;
 };
 
 const PostContext = createContext<PostContextValue | null>(null);
@@ -19,15 +25,20 @@ const PostContext = createContext<PostContextValue | null>(null);
 export default function PostProvider({
   children,
   hasSiteAccess,
+  baseUrl,
 }: {
   children: React.ReactNode;
   hasSiteAccess: boolean;
+  baseUrl: string;
 }) {
   const [formOpen, setFormOpen] = useState(false);
   const [revision, setRevision] = useState(0);
+  const [memeCount, setMemeCount] = useState<number | null>(null);
   const [toast, setToast] = useState("");
   const [adminMode, setAdminMode] = useState(false);
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
+  const [rickMode, setRickMode] = useState(false);
+  const [rickDialogOpen, setRickDialogOpen] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const refreshFeed = () => setRevision((value) => value + 1);
   const showToast = (message: string) => {
@@ -56,6 +67,9 @@ export default function PostProvider({
 
   return (
     <PostContext value={{
+      baseUrl,
+      memeCount,
+      setMemeCount,
       openPostForm: () => setFormOpen(true),
       revision,
       refreshFeed,
@@ -63,13 +77,32 @@ export default function PostProvider({
       adminMode,
       openAdminDialog: () => setAdminDialogOpen(true),
       disableAdminMode,
+      rickMode,
+      openRickDialog: () => setRickDialogOpen(true),
+      disableRickMode: () => {
+        setRickMode(false);
+        showToast("Rick modus uitgeschakeld");
+      },
     }}>
       {children}
+      {rickDialogOpen && (
+        <AdminDialog
+          mode="rick"
+          onClose={() => setRickDialogOpen(false)}
+          onEnabled={() => {
+            setRickMode(true);
+            setRickDialogOpen(false);
+            setAdminMode(false);
+            showToast("Rick modus ingeschakeld");
+          }}
+        />
+      )}
       {adminDialogOpen && (
         <AdminDialog
           onClose={() => setAdminDialogOpen(false)}
           onEnabled={() => {
             setAdminMode(true);
+            setRickMode(false);
             setAdminDialogOpen(false);
             showToast("Beheermodus ingeschakeld");
           }}

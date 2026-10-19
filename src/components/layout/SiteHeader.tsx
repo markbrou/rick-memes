@@ -1,13 +1,34 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePostContext } from "@/components/memes/post/PostProvider";
 
 export default function SiteHeader({ showPostAction }: { showPostAction: boolean }) {
   const { openPostForm } = usePostContext();
   const [showLogo, setShowLogo] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const scrollFrame = useRef(0);
+
+  function scrollToTop() {
+    window.cancelAnimationFrame(scrollFrame.current);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    const startY = window.scrollY;
+    let startedAt: number | null = null;
+    const animateScroll = (time: number) => {
+      startedAt ??= time;
+      const progress = Math.min((time - startedAt) / 600, 1);
+      window.scrollTo(0, startY * Math.pow(1 - progress, 3));
+      if (progress < 1) scrollFrame.current = window.requestAnimationFrame(animateScroll);
+    };
+    scrollFrame.current = window.requestAnimationFrame(animateScroll);
+  }
+
+  useEffect(() => () => window.cancelAnimationFrame(scrollFrame.current), []);
 
   useEffect(() => {
     const updateScrollState = () => setIsScrolled(window.scrollY > 0);
@@ -30,7 +51,12 @@ export default function SiteHeader({ showPostAction }: { showPostAction: boolean
   return (
     <header className={`sticky top-0 z-40 border-b bg-cream/85 backdrop-blur transition-colors duration-200 ${isScrolled ? "border-accent/20" : "border-transparent"}`}>
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <div className="flex items-center">
+        <button
+          type="button"
+          onClick={scrollToTop}
+          aria-label="RickMemes, terug naar boven"
+          className="flex items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4"
+        >
           <span
             aria-hidden="true"
             className={`mr-0 inline-flex h-9 overflow-hidden transition-[width,opacity,margin] duration-300 ${showLogo ? "mr-2 w-9 opacity-100" : "w-0 opacity-0"}`}
@@ -40,7 +66,7 @@ export default function SiteHeader({ showPostAction }: { showPostAction: boolean
           <span className="text-xl font-black tracking-tight">
             Rick<span className="text-accent">Memes</span>
           </span>
-        </div>
+        </button>
         <button
           onClick={openPostForm}
           disabled={!showPostAction}

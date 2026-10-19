@@ -7,6 +7,7 @@ import Avatar from "../Avatar";
 import CommentForm from "./CommentForm";
 import Comments from "./Comments";
 import CommentIcon from "../CommentIcon";
+import ShareButton from "../ShareButton";
 
 type Props = {
   item: MemeItem;
@@ -24,7 +25,7 @@ export default function PostDetails({ item, position }: Props) {
           <p className="text-sm font-semibold">{item.author}</p>
           <h2 className="whitespace-normal break-words text-base font-bold leading-snug [overflow-wrap:anywhere]">{item.title}</h2>
         </div>
-        <span className="shrink-0 text-xs text-merle">{position}</span>
+        <ShareButton memeId={item.id} title={item.title} />
         <button
           onClick={() => setBioOpen((o) => !o)}
           aria-expanded={bioOpen}
@@ -52,6 +53,9 @@ export default function PostDetails({ item, position }: Props) {
         </time>
         <Comments comments={item.comments ?? []} />
         <CommentForm memeId={item.id} />
+      </div>
+      <div className="relative z-10 shrink-0 bg-white px-4 py-2 text-right text-xs text-merle">
+        {position}
       </div>
     </figcaption>
   );

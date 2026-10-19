@@ -4,6 +4,10 @@ import { formatDate } from "@/lib/formatDate";
 import mediaLoader from "@/lib/mediaLoader";
 import Avatar from "./Avatar";
 import CommentIcon from "./CommentIcon";
+import ShareButton from "./ShareButton";
+import { isRecentMeme } from "@/lib/memeRecency";
+import { usePostContext } from "./post/PostProvider";
+import RickDeleteButton from "./RickDeleteButton";
 
 type Props = {
   item: MemeItem;
@@ -14,6 +18,8 @@ type Props = {
 };
 
 export default function Card({ item, onOpen, adminMode, deleting, onDelete }: Props) {
+  const { rickMode } = usePostContext();
+
   return (
     <article className="group relative overflow-hidden rounded-2xl bg-white text-left shadow-sm ring-1 ring-merle/15 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/20 hover:ring-accent/60">
       <button
@@ -39,22 +45,38 @@ export default function Card({ item, onOpen, adminMode, deleting, onDelete }: Pr
               </span>
             </div>
           )}
-        </div>
-        <div className="px-4 py-3">
-          <h3 className="truncate font-semibold text-merle-dark">{item.title}</h3>
-          <div className="mt-2 flex items-center gap-2 text-xs text-merle">
-            <Avatar name={item.author} size="sm" />
-            <span className="font-semibold text-merle-dark">{item.author}</span>
-            <span aria-hidden>·</span>
-            <time dateTime={item.postedAt}>{formatDate(item.postedAt)}</time>
-            <span className="ml-auto inline-flex items-center gap-1 text-sm" aria-label={`${item.comments?.length ?? 0} reacties`}>
-              <CommentIcon />
-              {item.comments?.length ?? 0}
+          {isRecentMeme(item.postedAt) && (
+            <span className="absolute left-3 top-3 rounded bg-yellow-200 px-2 py-1 text-xs font-bold text-yellow-950 shadow-sm">
+              Nieuw!
             </span>
-          </div>
+          )}
+        </div>
+        <div className="px-4 pt-3">
+          <h3 className="truncate font-semibold text-merle-dark">{item.title}</h3>
         </div>
       </button>
-      {adminMode && (
+      <div className="flex items-center gap-2 px-4 pb-3 pt-2">
+        <Avatar name={item.author} size="sm" />
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 text-xs text-merle">
+          <span className="min-w-0 font-semibold text-merle-dark [overflow-wrap:anywhere]">{item.author}</span>
+          <span aria-hidden>·</span>
+          <time className="shrink-0" dateTime={item.postedAt}>{formatDate(item.postedAt)}</time>
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
+          <ShareButton memeId={item.id} title={item.title} />
+          <button
+            type="button"
+            onClick={onOpen}
+            aria-label={`${item.comments?.length ?? 0} reacties op ${item.title}`}
+            title="Reacties bekijken"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-merle transition hover:bg-cream-dark hover:text-accent"
+          >
+            <CommentIcon className="h-5 w-5" count={item.comments?.length ?? 0} />
+          </button>
+        </div>
+      </div>
+      {rickMode && <RickDeleteButton title={item.title} />}
+      {adminMode && !rickMode && (
         <button
           type="button"
           onClick={onDelete}

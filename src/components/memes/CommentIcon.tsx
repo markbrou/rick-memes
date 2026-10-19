@@ -1,18 +1,16 @@
-export default function CommentIcon({ className = "h-6 w-6" }: { className?: string }) {
+import { MessageSquare } from "lucide-react";
+
+export default function CommentIcon({ className = "h-6 w-6", count }: { className?: string; count?: number }) {
+  const hasComments = (count ?? 0) > 0;
+
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
-      <path
-        d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4.5 2v-5.1A7.5 7.5 0 1 1 20 11.5Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M12 15.8s-3.2-1.9-3.2-4.1a1.8 1.8 0 0 1 3.2-1.1 1.8 1.8 0 0 1 3.2 1.1c0 2.2-3.2 4.1-3.2 4.1Z"
-        fill="currentColor"
-        className="text-tongue"
-      />
-    </svg>
+    <span aria-hidden="true" className={`relative inline-flex shrink-0 ${hasComments ? "text-accent" : "text-merle"} ${className}`}>
+      <MessageSquare className={`h-full w-full ${hasComments ? "fill-accent/15" : "fill-none"}`} />
+      {count !== undefined && (
+        <span className="absolute inset-x-0 top-1/2 -translate-y-[60%] text-center text-[9px] font-bold leading-none">
+          {count > 9 ? "9+" : count}
+        </span>
+      )}
+    </span>
   );
 }

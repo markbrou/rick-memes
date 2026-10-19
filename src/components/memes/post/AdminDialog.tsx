@@ -5,9 +5,10 @@ import { useState } from "react";
 type Props = {
   onClose: () => void;
   onEnabled: () => void;
+  mode?: "admin" | "rick";
 };
 
-export default function AdminDialog({ onClose, onEnabled }: Props) {
+export default function AdminDialog({ onClose, onEnabled, mode = "admin" }: Props) {
   const [passphrase, setPassphrase] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -17,7 +18,7 @@ export default function AdminDialog({ onClose, onEnabled }: Props) {
     setError("");
     setSubmitting(true);
     try {
-      const response = await fetch("/api/admin/session", {
+      const response = await fetch(mode === "rick" ? "/api/rick-mode" : "/api/admin/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ passphrase }),
@@ -47,13 +48,15 @@ export default function AdminDialog({ onClose, onEnabled }: Props) {
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 id="admin-dialog-title" className="text-lg font-bold">Beheermodus inschakelen</h2>
-            <p className="mt-1 text-sm text-merle">Voer de passphrase in om berichten te beheren. Jammer Rick, die heb jij niet xD.</p>
+            <h2 id="admin-dialog-title" className="text-lg font-bold">{mode === "rick" ? "Rick modus" : "Beheermodus inschakelen"}</h2>
+            {mode === "admin" && (
+              <p className="mt-1 text-sm text-merle">Voer de passphrase in om berichten te beheren. Jammer Rick, die heb jij niet xD.</p>
+            )}
           </div>
           <button type="button" onClick={onClose} aria-label="Sluiten" className="text-xl text-merle hover:text-merle-dark">×</button>
         </div>
         <label className="mt-5 grid gap-1.5 text-sm font-semibold">
-          Passphrase
+          {mode === "rick" ? "Wat was het Wi-Fi wachtwoord in Rome?" : "Passphrase"}
           <input
             type="password"
             autoComplete="current-password"
